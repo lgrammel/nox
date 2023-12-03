@@ -1,31 +1,23 @@
 "use client";
 
 import { useMicVAD, utils } from "@ricky0123/vad-react";
-import {
-  OpenAIApiConfiguration,
-  generateTranscription,
-  openai,
-} from "modelfusion";
 import { useState } from "react";
-
-const whisper = openai.Transcriber({
-  api: new OpenAIApiConfiguration({
-    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // INSECURE, DO NOT DEPLOY THIS APP
-  }),
-  model: "whisper-1",
-});
 
 export default function App() {
   const [transcriptionList, setTranscriptionList] = useState<string[]>([]);
 
   const vad = useMicVAD({
+    userSpeakingThreshold: 0.7,
     onSpeechEnd: async (audio) => {
       const wavBuffer = utils.encodeWAV(audio);
       const base64 = utils.arrayBufferToBase64(wavBuffer);
-      const transcription = await generateTranscription(whisper, {
-        type: "wav",
-        data: Buffer.from(base64, "base64"),
+
+      const transcriptionResponse = await fetch("/api/transcribe", {
+        method: "POST",
+        body: JSON.stringify({ data: base64 }),
       });
+      const { transcription } = await transcriptionResponse.json();
+
       setTranscriptionList((old) => [transcription, ...old]);
     },
   });
