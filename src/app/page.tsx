@@ -1,33 +1,37 @@
 "use client";
 
-import { useChat } from "ai/react";
+import { useMicVAD, utils } from "@ricky0123/vad-react";
+import { useState } from "react";
 
-export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+export const Demo = () => {
+  const [audioList, setAudioList] = useState<string[]>([]);
+  const vad = useMicVAD({
+    onSpeechEnd: (audio) => {
+      const wavBuffer = utils.encodeWAV(audio);
+      const base64 = utils.arrayBufferToBase64(wavBuffer);
+      const url = `data:audio/wav;base64,${base64}`;
+      setAudioList((old) => [url, ...old]);
+    },
+  });
 
   return (
-    <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
-      {messages.map((message) => (
-        <div
-          key={message.id}
-          className="whitespace-pre-wrap"
-          style={{ color: message.role === "user" ? "black" : "green" }}
-        >
-          <strong>{`${message.role}: `}</strong>
-          {message.content}
-          <br />
-          <br />
-        </div>
-      ))}
-
-      <form onSubmit={handleSubmit}>
-        <input
-          className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
-          value={input}
-          placeholder="Say something..."
-          onChange={handleInputChange}
-        />
-      </form>
+    <div>
+      <h6>Listening</h6>
+      {!vad.listening && "Not"} listening
+      <h6>Loading</h6>
+      {!vad.loading && "Not"} loading
+      <h6>Errored</h6>
+      {!vad.errored && "Not"} errored
+      <h6>User Speaking</h6>
+      {!vad.userSpeaking && "Not"} speaking
+      <h6>Audio count</h6>
+      {audioList.length}
+      <h6>Start/Pause</h6>
+      <button onClick={vad.pause}>Pause</button>
+      <button onClick={vad.start}>Start</button>
+      <button onClick={vad.toggle}>Toggle</button>
     </div>
   );
-}
+};
+
+export default Demo;
