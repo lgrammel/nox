@@ -33,7 +33,7 @@ export default function App() {
   });
 
   return (
-    <div className="bg-white p-4 shadow rounded-lg max-w-md mx-auto mt-8">
+    <div className="bg-white p-4 shadow rounded-lg max-w-6xl mx-auto mt-8">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center space-x-2">
           <IconMicrophone className="text-blue-600 h-6 w-6" />
