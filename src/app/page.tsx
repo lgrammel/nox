@@ -3,20 +3,31 @@
 import { Button } from "@/components/ui/button";
 import { IconMicrophone } from "@/components/ui/icon-microphone";
 import { useMicVAD, utils } from "@ricky0123/vad-react";
-import { useState } from "react";
+import { useCompletion } from "ai/react";
+import { useEffect, useState } from "react";
 
 export default function App() {
   const [items, setItems] = useState<
     Array<
       | { type: "transcription"; text: string }
       | { type: "command"; text: string }
+      | { type: "answer"; text: string }
     >
   >([]);
   const [transcribing, setTranscribing] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const {
+    completion,
+    complete: getAnswer,
+    setCompletion,
+  } = useCompletion({
+    api: "/api/answer",
+  });
 
   const vad = useMicVAD({
     userSpeakingThreshold: 0.7,
     onSpeechEnd: async (audio) => {
+      vad.pause();
       try {
         const wavBuffer = utils.encodeWAV(audio);
         const base64 = utils.arrayBufferToBase64(wavBuffer);
@@ -36,6 +47,8 @@ export default function App() {
           ? "command"
           : "transcription";
 
+        setItems((old) => [...old, { type, text: transcription }]);
+
         if (type === "command") {
           const command = transcription
             .toLowerCase()
@@ -43,21 +56,45 @@ export default function App() {
             .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
             .trim();
 
-          console.log("Command:", command);
+          if (command === "clear") {
+            setItems([]);
+            setCompletion("");
+          } else if (command === "stop") {
+            setPaused(true);
+          } else if (command === "send") {
+            const text = items
+              .filter((item) => item.type === "transcription")
+              .map((item) => item.text)
+              .join("\n\n");
 
-          if (command === "stop") {
-            vad.pause();
+            getAnswer(text);
+
+            // const answerResponse = await fetch("/api/answer", {
+            //   method: "POST",
+            //   body: JSON.stringify({ text }),
+            // });
+            // const {
+            //   answer,
+            // }: {
+            //   answer: string;
+            // } = await answerResponse.json();
+
+            // setItems((old) => [...old, { type: "answer", text: answer }]);
           }
         }
-
-        setItems((old) => [...old, { type, text: transcription }]);
       } catch (e) {
         console.error(e);
       } finally {
+        if (!paused) vad.start();
         setTranscribing(false);
       }
     },
   });
+
+  useEffect(() => {
+    if (paused) vad.pause();
+    else vad.start();
+  }, [paused, vad]);
 
   return (
     <div className="m-8">
@@ -80,8 +117,10 @@ export default function App() {
             </span>
           </div>
           <Button
-            variant={vad.listening ? "destructive" : "outline"}
-            onClick={vad.toggle}
+            variant={paused ? "outline" : "destructive"}
+            onClick={() => {
+              setPaused((old) => !old);
+            }}
           >
             {vad.listening ? "Stop" : "Start"}
           </Button>
@@ -101,8 +140,19 @@ export default function App() {
                     <p className="text-gray-700">{item.text}</p>
                   </div>
                 );
+              case "answer":
+                return (
+                  <div key={index} className="bg-green-100 p-2 rounded">
+                    <p className="text-gray-700">{item.text}</p>
+                  </div>
+                );
             }
           })}
+          {completion && (
+            <div className="bg-green-100 p-2 rounded">
+              <p className="text-gray-700">{completion}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
