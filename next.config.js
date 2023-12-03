@@ -4,7 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const nextConfig = {
   reactStrictMode: true,
 
-  webpack: (config, {}) => {
+  webpack: (config, { isServer, webpack }) => {
     config.resolve.extensions.push(".ts", ".tsx");
     config.resolve.fallback = { fs: false };
 
@@ -30,6 +30,13 @@ const nextConfig = {
         ],
       })
     );
+
+    // ignore async hooks on client side:
+    if (!isServer) {
+      config.plugins.push(
+        new webpack.IgnorePlugin({ resourceRegExp: /^node:async_hooks$/ })
+      );
+    }
 
     return config;
   },
