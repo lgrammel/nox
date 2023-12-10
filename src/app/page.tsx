@@ -98,11 +98,11 @@ export default function App() {
 
   return (
     <div className="m-8">
-      <div className="bg-white p-4 shadow rounded-lg max-w-6xl mx-auto">
+      <div className="bg-gray-800 p-4 shadow rounded-lg max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-2">
-            <IconMicrophone className="text-blue-600 h-6 w-6" />
-            <span className="text-gray-700">
+            <IconMicrophone className="text-blue-300 h-6 w-6" />
+            <span className="text-gray-300">
               {vad.loading
                 ? "Loading..."
                 : vad.errored
@@ -130,27 +130,27 @@ export default function App() {
             switch (item.type) {
               case "command":
                 return (
-                  <div key={index} className="bg-blue-100 p-2 rounded">
-                    <p className="text-gray-700">{item.text}</p>
+                  <div key={index} className="bg-blue-200 p-2 rounded">
+                    <p className="text-gray-300">{item.text}</p>
                   </div>
                 );
               case "transcription":
                 return (
-                  <div key={index} className="bg-gray-100 p-2 rounded">
-                    <p className="text-gray-700">{item.text}</p>
+                  <div key={index} className="bg-gray-700 p-2 rounded">
+                    <p className="text-gray-300">{item.text}</p>
                   </div>
                 );
               case "answer":
                 return (
-                  <div key={index} className="bg-green-100 p-2 rounded">
-                    <p className="text-gray-700">{item.text}</p>
+                  <div key={index} className="bg-green-200 p-2 rounded">
+                    <p className="text-gray-300">{item.text}</p>
                   </div>
                 );
             }
           })}
           {completion && (
-            <div className="bg-green-100 p-2 rounded">
-              <p className="text-gray-700">{completion}</p>
+            <div className="bg-green-200 p-2 rounded">
+              <p className="text-gray-300">{completion}</p>
             </div>
           )}
         </div>
