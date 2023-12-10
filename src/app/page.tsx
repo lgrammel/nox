@@ -22,6 +22,10 @@ export default function App() {
     setCompletion,
   } = useCompletion({
     api: "/api/answer",
+    onFinish: (prompt, completion) => {
+      setItems((old) => [...old, { type: "answer", text: completion }]);
+      setCompletion("");
+    },
   });
 
   const vad = useMicVAD({
@@ -75,7 +79,7 @@ export default function App() {
               .map((item) => item.text)
               .join("\n\n");
 
-            getAnswer(text);
+            await getAnswer(text);
 
             // const answerResponse = await fetch("/api/answer", {
             //   method: "POST",
