@@ -74,7 +74,12 @@ export default function App() {
           } else if (command === "start") {
             setPaused(false);
           } else if (command === "send") {
+            const lastAnswerIndex = items.findLastIndex(
+              (item) => item.type === "answer"
+            );
+
             const text = items
+              .slice(lastAnswerIndex + 1)
               .filter((item) => item.type === "transcription")
               .map((item) => item.text)
               .join("\n\n");
