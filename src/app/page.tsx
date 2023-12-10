@@ -130,7 +130,7 @@ export default function App() {
             switch (item.type) {
               case "command":
                 return (
-                  <div key={index} className="bg-blue-200 p-2 rounded">
+                  <div key={index} className="bg-sky-900 p-2 rounded">
                     <p className="text-gray-300">{item.text}</p>
                   </div>
                 );
@@ -142,15 +142,15 @@ export default function App() {
                 );
               case "answer":
                 return (
-                  <div key={index} className="bg-green-200 p-2 rounded">
+                  <div key={index} className="bg-emerald-900 p-2 rounded">
                     <p className="text-gray-300">{item.text}</p>
                   </div>
                 );
             }
           })}
           {completion && (
-            <div className="bg-green-200 p-2 rounded">
-              <p className="text-gray-300">{completion}</p>
+            <div className="bg-emerald-900 p-2 rounded">
+              <p>{completion}</p>
             </div>
           )}
         </div>
