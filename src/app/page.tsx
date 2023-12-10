@@ -85,18 +85,6 @@ export default function App() {
               .join("\n\n");
 
             await getAnswer(text);
-
-            // const answerResponse = await fetch("/api/answer", {
-            //   method: "POST",
-            //   body: JSON.stringify({ text }),
-            // });
-            // const {
-            //   answer,
-            // }: {
-            //   answer: string;
-            // } = await answerResponse.json();
-
-            // setItems((old) => [...old, { type: "answer", text: answer }]);
           }
         }
       } catch (e) {
